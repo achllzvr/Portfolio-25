@@ -16,7 +16,7 @@ export default function App() {
   const mouse = useMouseLight();
 
   const center = useMemo(()=> ({ x: window.innerWidth/2, y: window.innerHeight/2 }), []);
-  const SCALE = 0.95; // global layout scale factor
+  const SCALE = 0.85; // global layout scale factor (reduced by additional 10%)
 
   // Uniform radius with varied angles around center (replaces previous grid)
   const [nodePositions, setNodePositions] = useState(()=> {
@@ -39,6 +39,21 @@ export default function App() {
   const toggleNode = (id) => {
     setRevealed(r => ({ ...r, [id]: !r[id] }));
   };
+  // Toggle all nodes (expand if any collapsed; collapse if all expanded)
+  const toggleAllNodes = useCallback(() => {
+    setRevealed(prev => {
+      const allIds = baseNodes.map(n=> n.id);
+      const allOpen = allIds.every(id => prev[id]);
+      if(allOpen) {
+        // collapse all
+        return {};
+      }
+      // open all
+      const next = {};
+      for(const id of allIds) next[id] = true;
+      return next;
+    });
+  }, []);
   const toggleLock = (id) => {
     setLocked(l => ({ ...l, [id]: !l[id] }));
   };
@@ -166,7 +181,7 @@ export default function App() {
 
       {/* Center chip */}
       <div className="absolute" style={{ left: center.x - (100 * SCALE), top: center.y - (100 * SCALE) }}>
-        <CenterChip size={200 * SCALE} reduceMotion={reduceMotion} />
+        <CenterChip size={200 * SCALE} reduceMotion={reduceMotion} onToggleAll={toggleAllNodes} allOpen={baseNodes.every(n=> revealed[n.id])} />
       </div>
 
       {/* Detail Modal */}

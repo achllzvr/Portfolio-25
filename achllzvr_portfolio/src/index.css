@@ -12,7 +12,11 @@
 
   .theme-light .chip-shell { box-shadow: 0 0 0 1px rgba(0,0,0,0.10), 0 0 16px -6px rgba(0,0,0,0.28) inset, 0 0 20px -8px rgba(0,0,0,0.32) inset; }
   .theme-light .chip-active { border-color: rgba(174,0,1,0.55); }
-  .theme-light .chip-title { color: #AE0001; }
+  /* Brighter glowing red titles in light theme */
+  .theme-light .chip-title { 
+    color:#c40000; 
+    text-shadow:0 0 2px rgba(255,70,70,0.55), 0 0 5px rgba(255,90,90,0.35), 0 0 10px rgba(174,0,1,0.35);
+  }
   .theme-light .glow-overlay { mix-blend-mode: multiply; }
   .theme-light .signal-path { filter: drop-shadow(0 0 4px rgba(0,0,0,0.35)); }
   .theme-light svg path { stroke: #1d1f22; }
@@ -24,7 +28,15 @@
 @layer components {
   .chip-shell { position:relative; border-radius:0.75rem; border:1px solid rgba(255,255,255,0.10); background:rgba(255,255,255,0.05); backdrop-filter:blur(8px); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08); transition:all .3s cubic-bezier(.22,.61,.36,1); will-change:transform; }
   .chip-active { border-color:rgba(174,0,1,0.55); box-shadow:0 0 0 1px rgba(255,255,255,0.16), 0 0 10px 2px rgba(174,0,1,0.34); }
-  .chip-title { font-family:'JetBrains Mono', monospace; letter-spacing:0.02em; font-size:0.875rem; text-transform:uppercase; color:rgba(174,0,1,0.90); }
+  .chip-title { 
+    font-family:'JetBrains Mono', monospace; 
+    letter-spacing:0.02em; 
+    font-size:0.875rem; 
+    text-transform:uppercase; 
+    font-weight:600;
+    color:#ff3a3a; 
+    text-shadow:0 0 3px rgba(255,58,58,0.85), 0 0 8px rgba(174,0,1,0.55), 0 0 14px rgba(174,0,1,0.35);
+  }
   .scroll-thin { scrollbar-width: thin; }
   /* Explicit hover override to ensure red accent aura replaces any cached cyan */
   .chip-shell:hover {
