@@ -1,4 +1,8 @@
 import { useRef, useState, useEffect, useLayoutEffect, memo } from 'react';
+
+// Export shared pin geometry so line routing can align exactly
+export const NODE_PIN_GAP = 16; // space between node outer box and pin center
+export const NODE_PIN_SIZE = 8; // square size (CSS width/height)
 import { getIcon, skills as skillObjects } from '../content/portfolioContent.js';
 
 function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlighted, onItemClick, style, onDrag, reduceMotion=false, onMeasure, center }) {
@@ -103,7 +107,7 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
     const dx = node.pos.x - center.x; const dy = node.pos.y - center.y;
     if(Math.abs(dx) > Math.abs(dy)) side = dx < 0 ? 'right' : 'left'; else side = dy < 0 ? 'bottom' : 'top';
   }
-  const PIN_GAP = 16; const PIN_SIZE = 8;
+  const PIN_GAP = NODE_PIN_GAP; const PIN_SIZE = NODE_PIN_SIZE;
   let pinStyle = { left: -PIN_GAP, top: '50%', transform: 'translate(-50%, -50%)' };
   if(side === 'right') pinStyle = { right: -PIN_GAP, top: '50%', transform: 'translate(50%, -50%)' };
   if(side === 'top') pinStyle = { top: -PIN_GAP, left: '50%', transform: 'translate(-50%, -50%)' };

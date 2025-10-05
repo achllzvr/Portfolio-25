@@ -1,4 +1,5 @@
 import { useMemo, useEffect, useRef, useCallback } from 'react';
+import { NODE_PIN_GAP, NODE_PIN_SIZE } from './ChipNode.jsx';
 
 // Generate uniformly spaced pins (5 per side by default) around a square-ish center chip
 function generatePins(center, chipSize=200, perSide=5) {
@@ -66,27 +67,49 @@ export default function CircuitLines({ center, chipSize=200, nodes, detailNode, 
       const absDx = Math.abs(dx); const absDy = Math.abs(dy);
       let side;
       if(absDx > absDy) side = dx < 0 ? 'right' : 'left'; else side = dy < 0 ? 'bottom' : 'top';
-      const GAP = 16; // must match ChipNode PIN_GAP
+  const GAP = NODE_PIN_GAP; // consistent with ChipNode
       let anchorX = target.x; let anchorY = target.y;
       if(side === 'left') anchorX = target.x - halfW - GAP;
       if(side === 'right') anchorX = target.x + halfW + GAP;
       if(side === 'top') anchorY = target.y - halfH - GAP;
       if(side === 'bottom') anchorY = target.y + halfH + GAP;
+  // Adjust anchor to pin center by adding half the pin size in the direction of travel so path ends at visual center
+  const pinHalf = NODE_PIN_SIZE / 2;
+  if(side === 'left') anchorX -= pinHalf; else if(side === 'right') anchorX += pinHalf;
+  if(side === 'top') anchorY -= pinHalf; else if(side === 'bottom') anchorY += pinHalf;
       // anchorX/anchorY calculated above using measured dims (halfW/halfH) and GAP
-  // Orthogonal only: stub -> horizontal toward target.x -> vertical to target.y
+      // Strategy: minimal segments. We create a stub leaving the center pin, then decide routing order:
+      // If node pin is horizontally displaced more than vertical (left/right side), go horizontal first then vertical.
+      // If vertically oriented (top/bottom side), go vertical first then horizontal.
+      // This yields 4 segments total (M + 3 lines) unless a dog-leg is required to avoid direct overlap with chip edge.
       const stub = 14;
       let exitX = pin.x, exitY = pin.y;
       if(pin.id.startsWith('L')) exitX -= stub; else if(pin.id.startsWith('R')) exitX += stub; else if(pin.id.startsWith('T')) exitY -= stub; else if(pin.id.startsWith('B')) exitY += stub;
-      // Horizontal run straight to node x (optionally add minimal outward bias if very short)
-  let horizX = anchorX;
-      if(Math.abs(horizX - exitX) < 60) {
-        // add slight outward bias to avoid micro-stubs
-        horizX = exitX + (horizX > exitX ? 80 : -80);
+
+      // Decide routing order. Use side (relative orientation of node) not pin id, because side reflects node pin placement.
+      let d;
+      if(side === 'left' || side === 'right') {
+        // Horizontal-first then vertical to anchorY then into anchorX if needed.
+        // We ensure an intermediate elbowX to maintain clearance from chip if path would skim chip edge.
+        let elbowX = anchorX;
+        // Avoid a tiny horizontal run; add bias if too close creating cramped bend.
+        if(Math.abs(elbowX - exitX) < 40) {
+          const bias = 70;
+            elbowX = exitX + (elbowX > exitX ? bias : -bias);
+        }
+        d = `M ${pin.x} ${pin.y} L ${exitX} ${exitY} L ${elbowX} ${exitY} L ${elbowX} ${anchorY} L ${anchorX} ${anchorY}`;
+      } else {
+        // Vertical-first for top/bottom facing nodes.
+        let elbowY = anchorY;
+        if(Math.abs(elbowY - exitY) < 40) {
+          const bias = 70;
+          elbowY = exitY + (elbowY > exitY ? bias : -bias);
+        }
+        d = `M ${pin.x} ${pin.y} L ${exitX} ${exitY} L ${exitX} ${elbowY} L ${anchorX} ${elbowY} L ${anchorX} ${anchorY}`;
       }
-  const cacheKey = `${n.id}_${pin.id}_${horizX}_${anchorX}_${anchorY}_${side}_${halfW}_${halfH}_ortho_dyn`;
+      const cacheKey = `${n.id}_${pin.id}_${anchorX}_${anchorY}_${side}_${halfW}_${halfH}`;
       let entry = cacheRef.current[cacheKey];
       if(!entry) {
-  const d = `M ${pin.x} ${pin.y} L ${exitX} ${exitY} L ${horizX} ${exitY} L ${horizX} ${anchorY} L ${anchorX} ${anchorY}`;
         entry = { id: n.id, d, pinId: pin.id };
         cacheRef.current[cacheKey] = entry;
       }

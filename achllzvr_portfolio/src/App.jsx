@@ -172,23 +172,29 @@ export default function App() {
   <CircuitLines center={center} nodes={nodesWithPos} detailNode={detailNode} highlightedId={nearest} detaching={detaching} signal={signal} reduceMotion={reduceMotion} nodeDims={nodeDims} />
 
       {/* Nodes */}
-      {nodesWithPos.map(n => (
-        <ChipNode
-          key={n.id}
-          node={n}
-          revealed={!!revealed[n.id]}
-          locked={!!locked[n.id]}
-          highlighted={nearest===n.id}
-          onToggle={toggleNode}
-          onLockToggle={toggleLock}
-          onItemClick={(node, project)=> setDetail({ node, project })}
-          onDrag={dragNode}
-          reduceMotion={reduceMotion}
-          onMeasure={handleMeasure}
-          center={center}
-          style={{ left: n.pos.x - (128 * SCALE), top: n.pos.y - (48 * SCALE) }}
-        />
-      ))}
+      {nodesWithPos.map(n => {
+        const dims = nodeDims[n.id];
+        const style = dims
+          ? { left: n.pos.x - dims.width/2, top: n.pos.y - dims.height/2 }
+          : { left: n.pos.x - (128 * SCALE), top: n.pos.y - (48 * SCALE) };
+        return (
+          <ChipNode
+            key={n.id}
+            node={n}
+            revealed={!!revealed[n.id]}
+            locked={!!locked[n.id]}
+            highlighted={nearest===n.id}
+            onToggle={toggleNode}
+            onLockToggle={toggleLock}
+            onItemClick={(node, project)=> setDetail({ node, project })}
+            onDrag={dragNode}
+            reduceMotion={reduceMotion}
+            onMeasure={handleMeasure}
+            center={center}
+            style={style}
+          />
+        );
+      })}
 
       {/* Center chip */}
       <div className="absolute" style={{ left: center.x - (100 * SCALE), top: center.y - (100 * SCALE) }}>
