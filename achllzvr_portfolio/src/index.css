@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global custom layer */
+@layer base {
+  html, body, #root { height:100%; width:100%; }
+  body { color:#ffffff; -webkit-font-smoothing:antialiased; background:#0b0d10; }
+  ::selection { background:rgba(174,0,1,0.30); color:#fff; }
+  /* Light theme overrides */
+  .theme-light, .theme-light body { color:#111418; background:#e9ebee; }
+
+  .theme-light .chip-shell { box-shadow: 0 0 0 1px rgba(0,0,0,0.10), 0 0 16px -6px rgba(0,0,0,0.28) inset, 0 0 20px -8px rgba(0,0,0,0.32) inset; }
+  .theme-light .chip-active { border-color: rgba(174,0,1,0.55); }
+  .theme-light .chip-title { color: #AE0001; }
+  .theme-light .glow-overlay { mix-blend-mode: multiply; }
+  .theme-light .signal-path { filter: drop-shadow(0 0 4px rgba(0,0,0,0.35)); }
+  .theme-light svg path { stroke: #1d1f22; }
+  .theme-light .chip-shell:hover { box-shadow: 0 0 0 1px rgba(0,0,0,0.18), 0 0 10px 2px rgba(174,0,1,0.35), 0 0 14px 4px rgba(174,0,1,0.15); }
+
+  .theme-light .animate-guide-spin { color: #222; }
+}
+
+@layer components {
+  .chip-shell { position:relative; border-radius:0.75rem; border:1px solid rgba(255,255,255,0.10); background:rgba(255,255,255,0.05); backdrop-filter:blur(8px); box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08); transition:all .3s cubic-bezier(.22,.61,.36,1); will-change:transform; }
+  .chip-active { border-color:rgba(174,0,1,0.55); box-shadow:0 0 0 1px rgba(255,255,255,0.16), 0 0 10px 2px rgba(174,0,1,0.34); }
+  .chip-title { font-family:'JetBrains Mono', monospace; letter-spacing:0.02em; font-size:0.875rem; text-transform:uppercase; color:rgba(174,0,1,0.90); }
+  .scroll-thin { scrollbar-width: thin; }
+  /* Explicit hover override to ensure red accent aura replaces any cached cyan */
+  .chip-shell:hover {
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.16), 0 0 12px 3px rgba(174,0,1,0.42), 0 0 20px 6px rgba(174,0,1,0.20);
+    border-color: rgba(174,0,1,0.48);
+  }
+}
+
+@layer utilities {
+  .transition-theme { transition: background-color 700ms ease, color 600ms ease, box-shadow 600ms ease, border-color 600ms ease, fill 600ms ease, stroke 600ms ease; }
+  .glass { background:rgba(255,255,255,0.05); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.10); }
+  .no-select { user-select: none; }
+  @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+  @keyframes signal-move { to { stroke-dashoffset: -2000; } }
+  @keyframes beacon { 0%,100% { opacity:.15; transform: scale(1); } 50% { opacity:.7; transform: scale(1.6); } }
+  .signal-path { animation: signal-move 1.2s linear forwards; filter: drop-shadow(0 0 6px rgba(255,255,255,0.6)); }
+  .beacon { animation: beacon 1.2s ease-in-out infinite; }
+  .glow-overlay { 
+    background:
+      radial-gradient(circle 900px at var(--pointer-x,50%) var(--pointer-y,50%), rgba(255,255,255,0.12), transparent 70%),
+      radial-gradient(circle 1400px at var(--pointer-x,50%) var(--pointer-y,50%), rgba(255,255,255,0.05), transparent 75%),
+      radial-gradient(circle 2000px at var(--pointer-x,50%) var(--pointer-y,50%), rgba(255,255,255,0.025), transparent 80%);
+    mix-blend-mode: screen;
+  }
+  @keyframes guide-spin {
+    0% { transform: rotate(0deg); }
+    70% { transform: rotate(350deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .animate-guide-spin {
+    animation: guide-spin 2s ease-in-out infinite;
+  }
+
+  @keyframes fadeSlide { 0% { opacity:0; transform: translateY(-6px); } 60% { opacity:1; transform: translateY(2px); } 100% { opacity:1; transform: translateY(0); } }
+  @keyframes fadeStagger { 0% { opacity:0; transform: translateY(4px); } 40% { opacity:.7; } 100% { opacity:1; transform: translateY(0); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-guide-spin { animation: none; }
+    [class*='fadeSlide'], [class*='fadeStagger'] { animation: none !important; }
+  }
+
+  /* Motion reduction override */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-guide-spin { animation: none; }
+  }
+
+  /* Explicit runtime toggle for motion-off (applied via root .motion-reduce class) */
+  .motion-reduce *,
+  .motion-reduce *::before,
+  .motion-reduce *::after { animation: none !important; transition: none !important; }
+  .motion-reduce .signal-path { animation: none !important; }
+  .motion-reduce .beacon { animation: none !important; }
+  .motion-reduce .transition-theme { transition: none !important; }
+}
+
