@@ -1,4 +1,4 @@
-import { useRef, useState, memo } from 'react';
+import { useRef, useState, useEffect, memo } from 'react';
 import { getIcon, skills as skillObjects } from '../content/portfolioContent.js';
 
 function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlighted, onItemClick, style, onDrag, reduceMotion=false }) {
@@ -66,6 +66,18 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
     window.addEventListener('pointerleave', upOrCancel);
   };
 
+  // Local mount state to allow collapse animation before unmount
+  const [showDetail, setShowDetail] = useState(revealed);
+  useEffect(()=> {
+    if(revealed) {
+      setShowDetail(true);
+    } else {
+      // delay unmount for animation (match CSS duration ~500ms)
+      const t = setTimeout(()=> setShowDetail(false), 520);
+      return ()=> clearTimeout(t);
+    }
+  }, [revealed]);
+
   return (
     <div
   className={`chip-shell absolute ${node.id==='projects' && revealed ? 'w-[30rem]' : 'w-80'} transition-all duration-300 ease-out-soft ${highlighted ? 'chip-active scale-[1.04]' : 'hover:shadow-glow'} ${revealed ? 'backdrop-blur-lg bg-white/10 theme-light:bg-white/50 theme-light:border-black/10 theme-light:shadow-[0_0_0_1px_rgba(0,0,0,0.06),0_6px_18px_-8px_rgba(0,0,0,0.25)]' : 'bg-white/5 theme-light:bg-white/40'} cursor-pointer select-none text-[14px] theme-light:text-neutral-800`}
@@ -83,8 +95,11 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
           >{locked? '🔒' : '🔓'}</button>
         )}
       </div>
-      {revealed && (
-        <div className="text-[14px] font-mono leading-relaxed max-h-64 overflow-auto pr-1 space-y-2 scroll-thin theme-light:text-neutral-700">
+      {showDetail && (
+        <div
+          className={`detail-anim ${revealed ? 'detail-open' : 'detail-closed'} text-[14px] font-mono leading-relaxed overflow-auto pr-1 space-y-2 scroll-thin theme-light:text-neutral-700`}
+          aria-hidden={!revealed}
+        >
           {node.type === 'list' && node.content.map((c,i) => <div key={i}>{'> '}{c}</div>)}
           {node.type === 'tags' && (
             <div className="flex flex-wrap gap-1">{skillObjects.map(s => <span key={s.name} className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/10 text-white/90 border border-white/25 text-[11px] theme-light:bg-neutral-800 theme-light:text-neutral-100 theme-light:border-neutral-700"><span className="opacity-80">{getIcon(s.icon)}</span>{s.name}</span>)}</div>
