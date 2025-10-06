@@ -33,7 +33,7 @@ function findNearestPin(pins, pos) {
   return best;
 }
 
-export default function CircuitLines({ center, chipSize=200, nodes, detailNode, highlightedId, detaching, signal, reduceMotion=false, nodeDims={} }) {
+export default function CircuitLines({ center, chipSize=200, nodes, detailNode, highlightedId, detaching, signal, reduceMotion=false }) {
   const pins = useMemo(()=> generatePins(center, chipSize, 5), [center, chipSize]);
 
   // No bus columns in simplified reference style
@@ -61,6 +61,7 @@ export default function CircuitLines({ center, chipSize=200, nodes, detailNode, 
     for(const n of nodes) {
       const pin = pinAssignments[n.id] || findNearestPin(pins, n.pos);
       const target = n.pos;
+<<<<<<< HEAD
       const dims = nodeDims[n.id] || { width: (n.id==='projects'? 480 : 320), height: 96 };
       const halfW = dims.width / 2; const halfH = dims.height / 2;
       const dx = target.x - center.x; const dy = target.y - center.y;
@@ -110,6 +111,22 @@ export default function CircuitLines({ center, chipSize=200, nodes, detailNode, 
       const cacheKey = `${n.id}_${pin.id}_${anchorX}_${anchorY}_${side}_${halfW}_${halfH}`;
       let entry = cacheRef.current[cacheKey];
       if(!entry) {
+=======
+  // Orthogonal only: stub -> horizontal toward target.x -> vertical to target.y
+      const stub = 14;
+      let exitX = pin.x, exitY = pin.y;
+      if(pin.id.startsWith('L')) exitX -= stub; else if(pin.id.startsWith('R')) exitX += stub; else if(pin.id.startsWith('T')) exitY -= stub; else if(pin.id.startsWith('B')) exitY += stub;
+      // Horizontal run straight to node x (optionally add minimal outward bias if very short)
+      let horizX = target.x;
+      if(Math.abs(horizX - exitX) < 60) {
+        // add slight outward bias to avoid micro-stubs
+        horizX = exitX + (horizX > exitX ? 80 : -80);
+      }
+      const cacheKey = `${n.id}_${pin.id}_${horizX}_${target.x}_${target.y}_ortho`;
+      let entry = cacheRef.current[cacheKey];
+      if(!entry) {
+  const d = `M ${pin.x} ${pin.y} L ${exitX} ${exitY} L ${horizX} ${exitY} L ${horizX} ${target.y} L ${target.x} ${target.y}`;
+>>>>>>> parent of 3e907cf (Enhance ChipNode and CircuitLines components with dynamic pin placement and measurement handling; add CSS transitions for node pins)
         entry = { id: n.id, d, pinId: pin.id };
         cacheRef.current[cacheKey] = entry;
       }
@@ -125,7 +142,7 @@ export default function CircuitLines({ center, chipSize=200, nodes, detailNode, 
       arr.push({ id: 'detail', d, state: false, pos: target });
     }
     return arr;
-  }, [nodes, detailNode, detaching, pins, pinAssignments, center.x, center.y, nodeDims]);
+  }, [nodes, detailNode, detaching, pins, pinAssignments]);
 
   const pathRefs = useRef({}); // highlight overlay
   const baseRefs = useRef({}); // base copper

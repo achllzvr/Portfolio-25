@@ -1,11 +1,15 @@
+<<<<<<< HEAD
 import { useRef, useState, useEffect, useLayoutEffect, memo } from 'react';
 
 // Export shared pin geometry so line routing can align exactly
 export const NODE_PIN_GAP = 16; // space between node outer box and pin center
 export const NODE_PIN_SIZE = 8; // square size (CSS width/height)
+=======
+import { useRef, useState, useEffect, memo } from 'react';
+>>>>>>> parent of 3e907cf (Enhance ChipNode and CircuitLines components with dynamic pin placement and measurement handling; add CSS transitions for node pins)
 import { getIcon, skills as skillObjects } from '../content/portfolioContent.js';
 
-function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlighted, onItemClick, style, onDrag, reduceMotion=false, onMeasure, center }) {
+function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlighted, onItemClick, style, onDrag, reduceMotion=false }) {
   // Long press drag logic (robust against re-renders)
   const pressTimerRef = useRef(null);
   const isPressingRef = useRef(false);
@@ -82,6 +86,7 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
     }
   }, [revealed]);
 
+<<<<<<< HEAD
   // measure for dynamic pin placement
   const rootRef = useRef(null);
   useLayoutEffect(()=> {
@@ -113,20 +118,17 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
   if(side === 'top') pinStyle = { top: -PIN_GAP, left: '50%', transform: 'translate(-50%, -50%)' };
   if(side === 'bottom') pinStyle = { bottom: -PIN_GAP, left: '50%', transform: 'translate(-50%, 50%)' };
 
+=======
+>>>>>>> parent of 3e907cf (Enhance ChipNode and CircuitLines components with dynamic pin placement and measurement handling; add CSS transitions for node pins)
   return (
     <div
-      ref={rootRef}
-  className={`chip-shell node-chip absolute ${node.id==='projects' && revealed ? 'w-[30rem]' : 'w-80'} transition-all duration-300 ease-out-soft ${highlighted ? 'chip-active scale-[1.04]' : 'hover:shadow-glow'} ${revealed ? 'backdrop-blur-lg bg-white/10 theme-light:bg-white/50 theme-light:border-black/10 theme-light:shadow-[0_0_0_1px_rgba(0,0,0,0.06),0_6px_18px_-8px_rgba(0,0,0,0.25)]' : 'bg-white/5 theme-light:bg-white/40'} cursor-pointer select-none text-[14px] theme-light:text-neutral-800`}
+  className={`chip-shell absolute ${node.id==='projects' && revealed ? 'w-[30rem]' : 'w-80'} transition-all duration-300 ease-out-soft ${highlighted ? 'chip-active scale-[1.04]' : 'hover:shadow-glow'} ${revealed ? 'backdrop-blur-lg bg-white/10 theme-light:bg-white/50 theme-light:border-black/10 theme-light:shadow-[0_0_0_1px_rgba(0,0,0,0.06),0_6px_18px_-8px_rgba(0,0,0,0.25)]' : 'bg-white/5 theme-light:bg-white/40'} cursor-pointer select-none text-[14px] theme-light:text-neutral-800`}
       style={style}
       onPointerDown={handlePointerDown}
     >
-      {/* Single animated pin */}
-      <div className={`node-pin absolute pointer-events-none`} style={{ ...pinStyle, width: PIN_SIZE, height: PIN_SIZE }} data-side={side}>
-        <div className="w-full h-full rounded-[2px] bg-white/85 theme-light:bg-black/85 shadow-[0_0_4px_-1px_rgba(255,255,255,0.7)]" />
-      </div>
   <div className={`${(isDragging || reduceMotion) ? '' : 'animate-float-medium'} flex flex-col p-5 gap-4`}>
-        <div className={`flex items-start ${revealed? 'justify-between' : 'justify-center'} transition-all duration-500 ease-[cubic-bezier(.22,.61,.36,1)]`}>
-  <div className={`chip-title text-[14px] tracking-wide theme-light:text-accent transition-all duration-500 ease-[cubic-bezier(.22,.61,.36,1)] ${revealed? 'text-left self-start' : 'text-center'} ${revealed? 'translate-x-0 opacity-100' : 'opacity-95'}`}>{node.label}</div>
+        <div className="flex items-center justify-between">
+  <div className="chip-title text-[14px] tracking-wide theme-light:text-accent">{node.label}</div>
         {revealed && (
           <button
             onClick={(e)=> { e.stopPropagation(); onLockToggle(node.id); }}
@@ -135,7 +137,7 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
           >{locked? '🔒' : '🔓'}</button>
         )}
       </div>
-  {showDetail && (
+      {showDetail && (
         <div
           className={`detail-anim ${revealed ? 'detail-open' : 'detail-closed'} text-[14px] font-mono leading-relaxed overflow-auto pr-1 space-y-2 scroll-thin theme-light:text-neutral-700`}
           aria-hidden={!revealed}

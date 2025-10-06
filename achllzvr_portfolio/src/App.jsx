@@ -11,7 +11,6 @@ export default function App() {
   const [revealed, setRevealed] = useState({});
   const [locked, setLocked] = useState({});
   const [detail, setDetail] = useState(null); // {node, project}
-  const [nodeDims, setNodeDims] = useState({}); // id -> {width,height}
   const [detaching, setDetaching] = useState({}); // nodeId -> true while dragging
   const [signal, setSignal] = useState({}); // nodeId -> true shortly after reattach
   const mouse = useMouseLight();
@@ -149,14 +148,6 @@ export default function App() {
   const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark');
   const toggleMotion = () => setReduceMotion(m => !m);
 
-  const handleMeasure = useCallback((id, rect) => {
-    setNodeDims(d => {
-      const prev = d[id];
-      if(prev && prev.width === rect.width && prev.height === rect.height) return d; // avoid unnecessary renders
-      return { ...d, [id]: { width: rect.width, height: rect.height } };
-    });
-  }, []);
-
   return (
   <div className={`relative w-full h-full font-sans overflow-hidden transition-theme ${theme==='light' ? 'theme-light' : 'theme-dark'} ${reduceMotion? 'motion-reduce' : ''}` }>
   {/* Cross-fade stacked backgrounds (dark & light both rendered) */}
@@ -182,32 +173,24 @@ export default function App() {
   </div>
 
   {/* Circuit Lines (always visible; individual path animates during its own detach) */}
-  <CircuitLines key={refreshToken} center={center} nodes={nodesWithPos} detailNode={detailNode} highlightedId={nearest} detaching={detaching} signal={signal} reduceMotion={reduceMotion} nodeDims={nodeDims} />
+  <CircuitLines center={center} nodes={nodesWithPos} detailNode={detailNode} highlightedId={nearest} detaching={detaching} signal={signal} reduceMotion={reduceMotion} />
 
       {/* Nodes */}
-      {nodesWithPos.map(n => {
-        const dims = nodeDims[n.id];
-        const style = dims
-          ? { left: n.pos.x - dims.width/2, top: n.pos.y - dims.height/2 }
-          : { left: n.pos.x - (128 * SCALE), top: n.pos.y - (48 * SCALE) };
-        return (
-          <ChipNode
-            key={n.id}
-            node={n}
-            revealed={!!revealed[n.id]}
-            locked={!!locked[n.id]}
-            highlighted={nearest===n.id}
-            onToggle={toggleNode}
-            onLockToggle={toggleLock}
-            onItemClick={(node, project)=> setDetail({ node, project })}
-            onDrag={dragNode}
-            reduceMotion={reduceMotion}
-            onMeasure={handleMeasure}
-            center={center}
-            style={style}
-          />
-        );
-      })}
+      {nodesWithPos.map(n => (
+        <ChipNode
+          key={n.id}
+          node={n}
+          revealed={!!revealed[n.id]}
+          locked={!!locked[n.id]}
+          highlighted={nearest===n.id}
+          onToggle={toggleNode}
+          onLockToggle={toggleLock}
+          onItemClick={(node, project)=> setDetail({ node, project })}
+          onDrag={dragNode}
+          reduceMotion={reduceMotion}
+          style={{ left: n.pos.x - (128 * SCALE), top: n.pos.y - (48 * SCALE) }}
+        />
+      ))}
 
       {/* Center chip */}
       <div className="absolute" style={{ left: center.x - (100 * SCALE), top: center.y - (100 * SCALE) }}>
