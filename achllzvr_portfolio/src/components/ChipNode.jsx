@@ -1,12 +1,10 @@
-<<<<<<< HEAD
 import { useRef, useState, useEffect, useLayoutEffect, memo } from 'react';
 
 // Export shared pin geometry so line routing can align exactly
 export const NODE_PIN_GAP = 16; // space between node outer box and pin center
 export const NODE_PIN_SIZE = 8; // square size (CSS width/height)
-=======
+
 import { useRef, useState, useEffect, memo } from 'react';
->>>>>>> parent of 3e907cf (Enhance ChipNode and CircuitLines components with dynamic pin placement and measurement handling; add CSS transitions for node pins)
 import { getIcon, skills as skillObjects } from '../content/portfolioContent.js';
 
 function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlighted, onItemClick, style, onDrag, reduceMotion=false }) {
@@ -86,7 +84,6 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
     }
   }, [revealed]);
 
-<<<<<<< HEAD
   // measure for dynamic pin placement
   const rootRef = useRef(null);
   useLayoutEffect(()=> {
@@ -118,9 +115,7 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
   if(side === 'top') pinStyle = { top: -PIN_GAP, left: '50%', transform: 'translate(-50%, -50%)' };
   if(side === 'bottom') pinStyle = { bottom: -PIN_GAP, left: '50%', transform: 'translate(-50%, 50%)' };
 
-=======
->>>>>>> parent of 3e907cf (Enhance ChipNode and CircuitLines components with dynamic pin placement and measurement handling; add CSS transitions for node pins)
-  return (
+ return (
     <div
   className={`chip-shell absolute ${node.id==='projects' && revealed ? 'w-[30rem]' : 'w-80'} transition-all duration-300 ease-out-soft ${highlighted ? 'chip-active scale-[1.04]' : 'hover:shadow-glow'} ${revealed ? 'backdrop-blur-lg bg-white/10 theme-light:bg-white/50 theme-light:border-black/10 theme-light:shadow-[0_0_0_1px_rgba(0,0,0,0.06),0_6px_18px_-8px_rgba(0,0,0,0.25)]' : 'bg-white/5 theme-light:bg-white/40'} cursor-pointer select-none text-[14px] theme-light:text-neutral-800`}
       style={style}
