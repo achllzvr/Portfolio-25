@@ -19,22 +19,35 @@ export default function App() {
   const center = useMemo(()=> ({ x: window.innerWidth/2, y: window.innerHeight/2 }), []);
   const SCALE = 0.85; // global layout scale factor (reduced by additional 10%)
 
-  // Uniform radius with varied angles around center (replaces previous grid)
+  // Spread out with varied radius & elliptical squash; deterministic per node.
+  // Explicit Cartesian layout instead of polar to guarantee identical startup.
+  // Offsets are from center (chip center). Adjust numbers to fine tune.
+  const layoutSpec = [
+    { id: 'about', dx: 0, dy: -340, route: 'vertical-first' },
+    { id: 'skills', dx: 360, dy: -60, route: 'horizontal-first' },
+    { id: 'projects', dx: 420, dy: 80, route: 'horizontal-first' },
+    { id: 'links', dx: 0, dy: 360, route: 'vertical-first' },
+    { id: 'certs', dx: -420, dy: -40, route: 'horizontal-first' },
+    { id: 'experience', dx: -340, dy: 240, route: 'horizontal-first' },
+  ];
+
+  // Convert spec to absolute positions
+  function specToPos(spec) {
+    return { x: center.x + spec.dx * SCALE, y: center.y + spec.dy * SCALE };
+  }
+
   const [nodePositions, setNodePositions] = useState(()=> {
-  const R = 420 * SCALE; // uniform radial distance (scaled)
-    const count = baseNodes.length;
-    // Base angles evenly spaced, then apply a deterministic small jitter so they aren't perfectly symmetric
-    return baseNodes.map((n, i) => {
-      const baseAngle = (i / count) * Math.PI * 2; // even distribution
-      // deterministic jitter based on id hash
-      const hash = [...n.id].reduce((a,c)=> (a + c.charCodeAt(0)*31)%9973, 0);
-      const jitter = ((hash % 100) / 100 - 0.5) * (Math.PI / 14); // +/- ~6.4 degrees
-      const angle = baseAngle + jitter;
-      const x = center.x + Math.cos(angle) * R;
-      const y = center.y + Math.sin(angle) * R * 0.60; // vertical squash retained
-      return { ...n, pos: { x, y } };
-    });
+    const byId = Object.fromEntries(baseNodes.map(n => [n.id, n]));
+    return layoutSpec.map(spec => ({ ...byId[spec.id], pos: specToPos(spec) }));
   });
+
+  // one-time key bump to refresh lines after first paint
+  const [refreshToken, setRefreshToken] = useState(0);
+  useEffect(()=> {
+    // Force one reflow / line refresh only if we did not load from cache (refreshToken stays 0 until this fires)
+    const t = requestAnimationFrame(()=> setRefreshToken(r => r === 0 ? 1 : r));
+    return ()=> cancelAnimationFrame(t);
+  }, []);
   const nodesWithPos = nodePositions; // alias for existing variable names below
 
   const toggleNode = (id) => {
@@ -65,7 +78,7 @@ export default function App() {
       setSignal(s => ({ ...s, [id]: true }));
       setTimeout(()=> setSignal(s => ({ ...s, [id]: false })), 1200);
     }
-    setNodePositions(prev => prev.map(n => n.id === id ? { ...n, pos: { x, y } } : n));
+  setNodePositions(prev => prev.map(n => n.id === id ? { ...n, pos: { x, y } } : n));
     if(drop) {
       // enforce spacing after final drop
       setNodePositions(prev => enforceSpacing(prev, id));
@@ -169,7 +182,7 @@ export default function App() {
   </div>
 
   {/* Circuit Lines (always visible; individual path animates during its own detach) */}
-  <CircuitLines center={center} nodes={nodesWithPos} detailNode={detailNode} highlightedId={nearest} detaching={detaching} signal={signal} reduceMotion={reduceMotion} nodeDims={nodeDims} />
+  <CircuitLines key={refreshToken} center={center} nodes={nodesWithPos} detailNode={detailNode} highlightedId={nearest} detaching={detaching} signal={signal} reduceMotion={reduceMotion} nodeDims={nodeDims} />
 
       {/* Nodes */}
       {nodesWithPos.map(n => {
