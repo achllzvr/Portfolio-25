@@ -47,6 +47,31 @@
   }
   .detail-open { max-height:640px; opacity:1; }
   .detail-closed { pointer-events:none; }
+  /* Upward-expanding detail panel (position above the chip) */
+    .detail-up { 
+      position: absolute; 
+      bottom: calc(100% + 8px); 
+      left: 0; 
+      right: 0; 
+      transform-origin: bottom center; 
+      border-radius: 0.75rem; 
+      padding: 0.75rem; 
+      background: rgba(255,255,255,0.04); 
+      border: 1px solid rgba(255,255,255,0.06); 
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02), 0 8px 20px -8px rgba(0,0,0,0.6); 
+      z-index: 40; 
+    }
+    .detail-up.detail-closed { transform: translateY(6px); opacity:0; }
+    .detail-up.detail-open { transform: translateY(0); opacity:1; }
+  /* Downward-expanding detail panel styled like chip shells */
+  .detail-down { position: absolute; top: calc(100% + 8px); left: 0; right: 0; transform-origin: top center; z-index: 40; }
+  .detail-down.detail-closed { transform: translateY(-6px); }
+  .detail-down.detail-open { transform: translateY(0); }
+  /* Ensure chip-shell styling applied to detail wrappers shows a padded content area */
+  .chip-shell.detail-down { padding: 0.75rem; }
+  .chip-shell.detail-up { padding: 0.75rem; }
+  .detail-up.detail-closed { transform: translateY(6px); opacity: 0; pointer-events: none; }
+  .detail-up.detail-open { transform: translateY(0); opacity: 1; pointer-events: auto; }
   .motion-reduce .detail-anim { transition:none !important; }
   .scroll-thin { scrollbar-width: thin; }
   /* Explicit hover override to ensure red accent aura replaces any cached cyan */

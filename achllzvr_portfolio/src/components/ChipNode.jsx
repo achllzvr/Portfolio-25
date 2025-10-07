@@ -88,7 +88,7 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
       const rect = rootRef.current.getBoundingClientRect();
   onMeasure?.(node.id, rect);
     }
-  }, [revealed, node.id]);
+  }, [revealed, node.id, onMeasure]);
   useEffect(()=> {
     const handler = () => {
       if(rootRef.current) {
@@ -98,7 +98,7 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
     };
     window.addEventListener('resize', handler);
     return ()=> window.removeEventListener('resize', handler);
-  }, [node.id]);
+  }, [node.id, onMeasure]);
 
   // determine facing side relative to center for single animated pin
   let side = 'left';
@@ -112,8 +112,12 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
   if(side === 'top') pinStyle = { top: -PIN_GAP, left: '50%', transform: 'translate(-50%, -50%)' };
   if(side === 'bottom') pinStyle = { bottom: -PIN_GAP, left: '50%', transform: 'translate(-50%, 50%)' };
 
+ const expandUp = node.id === 'about' || node.id === 'skills' || node.id === 'certs';
+ const styledDetail = ['about','skills','certs','experience','links','projects'].includes(node.id);
+
  return (
     <div
+      ref={rootRef}
       className={`chip-shell absolute ${node.id==='projects' && revealed ? 'w-[30rem]' : 'w-80'} transition-all duration-300 ease-out-soft ${highlighted ? 'chip-active scale-[1.04]' : 'hover:shadow-glow'} ${revealed ? 'backdrop-blur-lg bg-white/10' : 'bg-white/5'} cursor-pointer select-none text-[14px]`}
       style={style}
       onPointerDown={handlePointerDown}
@@ -130,37 +134,71 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
         )}
       </div>
       {showDetail && (
-        <div
-          className={`detail-anim ${revealed ? 'detail-open' : 'detail-closed'} text-[14px] font-mono leading-relaxed overflow-auto pr-1 space-y-2 scroll-thin`}
-          aria-hidden={!revealed}
-        >
-          {node.type === 'list' && node.content.map((c,i) => <div key={i}>{'> '}{c}</div>)}
-          {node.type === 'tags' && (
-            <div className="flex flex-wrap gap-1">{skillObjects.map(s => <span key={s.name} className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/10 text-white/90 border border-white/25 text-[11px]"><span className="opacity-80">{getIcon(s.icon)}</span>{s.name}</span>)}</div>
-          )}
-          {node.type === 'links' && node.content.map(l => (
-            <a key={l.id || l.label} href={l.href} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-white/80 hover:text-white underline underline-offset-4">
-              <span className="text-[13px] opacity-80">{getIcon(l.icon)}</span>{l.label || l.text}
-            </a>
-          ))}
-          {node.type === 'certs' && node.content.map(c => (
-            <div key={c.name} className="flex items-center gap-2 text-white/80">
-              <span className="text-[11px] opacity-70">{getIcon('api')}</span>
-              {c.link ? <a href={c.link} target="_blank" rel="noreferrer" className="hover:text-white underline decoration-dotted underline-offset-4 theme-light:text-neutral-100 theme-light:hover:text-white/70">{c.name}</a> : c.name}
-            </div>
-          ))}
-          {node.type === 'projects' && (
-            <div className="grid md:grid-cols-2 gap-3">
-              {node.content.map(p => (
-                <div key={p.id} onClick={(e)=>{ e.stopPropagation(); onItemClick?.(node,p); }} className="group border border-white/10 rounded-md p-3 hover:border-white/60 hover:bg-white/10 transition relative">
-                  <div className="font-mono text-[13px] flex justify-between"><span>{p.title}</span><span className="text-white/40">{p.stack[0]}</span></div>
-                  <div className="text-[12px] text-white/60 line-clamp-2">{p.blurb}</div>
-                  <div className="hidden group-hover:block absolute -top-3 -right-2 text-[9px] bg-white text-black px-1 rounded shadow">Details</div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        expandUp ? (
+          <div
+            className={`detail-anim ${revealed ? 'detail-open' : 'detail-closed'} detail-up ${styledDetail? 'chip-shell':''} text-[14px] font-mono leading-relaxed overflow-auto pr-1 space-y-2 scroll-thin`}
+            aria-hidden={!revealed}
+          >
+            {node.type === 'list' && node.content.map((c,i) => <div key={i}>{'> '}{c}</div>)}
+            {node.type === 'tags' && (
+              <div className="flex flex-wrap gap-1">{skillObjects.map(s => <span key={s.name} className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/10 text-white/90 border border-white/25 text-[11px]"><span className="opacity-80">{getIcon(s.icon)}</span>{s.name}</span>)}</div>
+            )}
+            {node.type === 'links' && node.content.map(l => (
+              <a key={l.id || l.label} href={l.href} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-white/80 hover:text-white underline underline-offset-4">
+                <span className="text-[13px] opacity-80">{getIcon(l.icon)}</span>{l.label || l.text}
+              </a>
+            ))}
+            {node.type === 'certs' && node.content.map(c => (
+              <div key={c.name} className="flex items-center gap-2 text-white/80">
+                <span className="text-[11px] opacity-70">{getIcon('api')}</span>
+                {c.link ? <a href={c.link} target="_blank" rel="noreferrer" className="hover:text-white underline decoration-dotted underline-offset-4">{c.name}</a> : c.name}
+              </div>
+            ))}
+            {node.type === 'projects' && (
+              <div className="grid md:grid-cols-2 gap-3">
+                {node.content.map(p => (
+                  <div key={p.id} onClick={(e)=>{ e.stopPropagation(); onItemClick?.(node,p); }} className="group border border-white/10 rounded-md p-3 hover:border-white/60 hover:bg-white/10 transition relative">
+                    <div className="font-mono text-[13px] flex justify-between"><span>{p.title}</span><span className="text-white/40">{p.stack[0]}</span></div>
+                    <div className="text-[12px] text-white/60 line-clamp-2">{p.blurb}</div>
+                    <div className="hidden group-hover:block absolute -top-3 -right-2 text-[9px] bg-white text-black px-1 rounded shadow">Details</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          ) : (
+            <div
+              className={`detail-anim ${revealed ? 'detail-open' : 'detail-closed'} ${styledDetail? 'detail-down chip-shell':''} text-[14px] font-mono leading-relaxed overflow-auto pr-1 space-y-2 scroll-thin`}
+              aria-hidden={!revealed}
+            >
+            {node.type === 'list' && node.content.map((c,i) => <div key={i}>{'> '}{c}</div>)}
+            {node.type === 'tags' && (
+              <div className="flex flex-wrap gap-1">{skillObjects.map(s => <span key={s.name} className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/10 text-white/90 border border-white/25 text-[11px]"><span className="opacity-80">{getIcon(s.icon)}</span>{s.name}</span>)}</div>
+            )}
+            {node.type === 'links' && node.content.map(l => (
+              <a key={l.id || l.label} href={l.href} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-white/80 hover:text-white underline underline-offset-4">
+                <span className="text-[13px] opacity-80">{getIcon(l.icon)}</span>{l.label || l.text}
+              </a>
+            ))}
+            {node.type === 'certs' && node.content.map(c => (
+              <div key={c.name} className="flex items-center gap-2 text-white/80">
+                <span className="text-[11px] opacity-70">{getIcon('api')}</span>
+                {c.link ? <a href={c.link} target="_blank" rel="noreferrer" className="hover:text-white underline decoration-dotted underline-offset-4">{c.name}</a> : c.name}
+              </div>
+            ))}
+            {node.type === 'projects' && (
+              <div className="grid md:grid-cols-2 gap-3">
+                {node.content.map(p => (
+                  <div key={p.id} onClick={(e)=>{ e.stopPropagation(); onItemClick?.(node,p); }} className="group border border-white/10 rounded-md p-3 hover:border-white/60 hover:bg-white/10 transition relative">
+                    <div className="font-mono text-[13px] flex justify-between"><span>{p.title}</span><span className="text-white/40">{p.stack[0]}</span></div>
+                    <div className="text-[12px] text-white/60 line-clamp-2">{p.blurb}</div>
+                    <div className="hidden group-hover:block absolute -top-3 -right-2 text-[9px] bg-white text-black px-1 rounded shadow">Details</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )
       )}
       {/* Pin visual (single square) positioned relative to node shell */}
       <div style={{ position: 'absolute', pointerEvents: 'none', ...pinStyle }}>
