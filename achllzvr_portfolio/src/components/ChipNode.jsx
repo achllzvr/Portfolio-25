@@ -3,11 +3,9 @@ import { useRef, useState, useEffect, useLayoutEffect, memo } from 'react';
 // Export shared pin geometry so line routing can align exactly
 export const NODE_PIN_GAP = 16; // space between node outer box and pin center
 export const NODE_PIN_SIZE = 8; // square size (CSS width/height)
-
-import { useRef, useState, useEffect, memo } from 'react';
 import { getIcon, skills as skillObjects } from '../content/portfolioContent.js';
 
-function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlighted, onItemClick, style, onDrag, reduceMotion=false }) {
+function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlighted, onItemClick, style, onDrag, reduceMotion=false, center, onMeasure }) {
   // Long press drag logic (robust against re-renders)
   const pressTimerRef = useRef(null);
   const isPressingRef = useRef(false);
@@ -89,19 +87,19 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
   useLayoutEffect(()=> {
     if(rootRef.current) {
       const rect = rootRef.current.getBoundingClientRect();
-      onMeasure?.(node.id, rect);
+  onMeasure?.(node.id, rect);
     }
-  }, [revealed, onMeasure, node.id]);
+  }, [revealed, node.id]);
   useEffect(()=> {
     const handler = () => {
       if(rootRef.current) {
         const rect = rootRef.current.getBoundingClientRect();
-        onMeasure?.(node.id, rect);
+  onMeasure?.(node.id, rect);
       }
     };
     window.addEventListener('resize', handler);
     return ()=> window.removeEventListener('resize', handler);
-  }, [onMeasure, node.id]);
+  }, [node.id]);
 
   // determine facing side relative to center for single animated pin
   let side = 'left';
@@ -165,6 +163,10 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
           )}
         </div>
       )}
+      {/* Pin visual (single square) positioned relative to node shell */}
+      <div style={{ position: 'absolute', pointerEvents: 'none', ...pinStyle }}>
+        <div style={{ width: PIN_SIZE, height: PIN_SIZE }} className="rounded-sm bg-white/20 theme-light:bg-neutral-800 border border-white/10" />
+      </div>
       </div>
     </div>
   );
