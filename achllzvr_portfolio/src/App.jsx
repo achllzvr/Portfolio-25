@@ -41,6 +41,7 @@ export default function App() {
   });
 
   // one-time key bump to refresh lines after first paint
+  // eslint-disable-next-line no-unused-vars
   const [refreshToken, setRefreshToken] = useState(0);
   useEffect(()=> {
     // Force one reflow / line refresh only if we did not load from cache (refreshToken stays 0 until this fires)
