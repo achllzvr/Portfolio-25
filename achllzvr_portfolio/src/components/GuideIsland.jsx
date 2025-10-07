@@ -20,9 +20,9 @@ export default function GuideIsland({ reduceMotion, onToggleMotion }) {
   const toggle = () => setOpen(o=> !o);
 
   return (
-    <div ref={containerRef} className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
-      {/* Anchor wrapper so expanded panel can position below */}
-      <div className="relative flex flex-col items-center">
+    <div ref={containerRef} className="fixed top-4 left-4 z-50">
+      {/* Anchor wrapper so expanded panel can position to the right */}
+      <div className="relative flex flex-col items-start">
         <button
           aria-label="Guide"
           aria-expanded={open}
@@ -37,11 +37,11 @@ export default function GuideIsland({ reduceMotion, onToggleMotion }) {
             <span className={`relative z-10 text-white/80 theme-light:text-neutral-700 ${reduceMotion? '' : 'animate-guide-spin'} select-none`}>?</span>
           )}
         </button>
-        {/* Expanded Panel below */}
+  {/* Expanded Panel (opens to the right) */}
         <div
           onMouseEnter={()=> { hoverRef.current = true; setOpen(true); }}
           onMouseLeave={()=> { hoverRef.current = false; if(!reduceMotion) setTimeout(()=> { if(!hoverRef.current) setOpen(false); }, 350); }}
-          className={`mt-2 origin-top w-[min(92vw,560px)] rounded-2xl backdrop-blur-md border shadow-xl flex flex-col gap-4 text-white/85 bg-white/12 border-white/20 p-0 overflow-hidden
+          className={`mt-2 origin-top-left left-0 w-[min(92vw,560px)] rounded-2xl backdrop-blur-md border shadow-xl flex flex-col gap-4 text-white/85 bg-white/12 border-white/20 p-0 overflow-hidden
             ${open? 'opacity-100 translate-y-0 scale-100 max-h-[520px]' : 'opacity-0 -translate-y-1 scale-95 pointer-events-none max-h-0'}
             transition-all ${reduceMotion? 'duration-0' : 'duration-400'} ease-[cubic-bezier(.33,.79,.24,1.04)] shadow-[0_8px_28px_-10px_rgba(0,0,0,0.55)]`}
           style={{ transitionProperty:'opacity,transform,max-height,box-shadow' }}
