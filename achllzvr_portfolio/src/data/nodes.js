@@ -3,12 +3,18 @@
 import { about, projects, skills as skillList, experience, certifications, links } from '../content/portfolioContent.js';
 
 export const baseNodes = [
-  { id: 'about', label: 'About Me', angle: 225, radius: 340, type: 'list', content: about },
-  { id: 'projects', label: 'Projects', angle: 330, radius: 350, type: 'projects', content: projects },
-  { id: 'skills', label: 'Skills', angle: 120, radius: 340, type: 'tags', content: skillList.map(s=> s.name) },
-  { id: 'experience', label: 'Experience', angle: 30, radius: 330, type: 'list', content: experience },
-  { id: 'certs', label: 'Certifications', angle: 260, radius: 360, type: 'certs', content: certifications },
-  { id: 'links', label: 'Links', angle: 150, radius: 360, type: 'links', content: links },
+  // Top-center (moved close to center ~10% distance)
+  { id: 'about', label: 'About Me', angle: 0, radius: 40, type: 'list', content: about },
+  // Right-lower (projects) - mirror outward shift to the right
+  { id: 'projects', label: 'Projects', angle: 90, radius: 460, type: 'projects', content: projects },
+  // Right-middle (skills) - pushed further right to mirror left side
+  { id: 'skills', label: 'Skills', angle: 90, radius: 460, type: 'tags', content: skillList.map(s=> s.name) },
+  // Left-lower (experience) - moved up slightly and pushed further left
+  { id: 'experience', label: 'Experience', angle: 240, radius: 460, type: 'list', content: experience },
+  // Left-middle (certifications) - pushed further left
+  { id: 'certs', label: 'Certifications', angle: 270, radius: 460, type: 'certs', content: certifications },
+  // Just below center (links) - very small radius to sit under the center chip (~10% down)
+  { id: 'links', label: 'Links', angle: 180, radius: 40, type: 'links', content: links },
 ];
 
 export function polarToXY(angleDeg, radius, center) {
