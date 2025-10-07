@@ -11,8 +11,8 @@ export default function CenterChip({ size = 220, reduceMotion=false, onToggleAll
       aria-pressed={allOpen}
       onClick={handleClick}
       onMouseEnter={() => { setShowAlt(s => !s); }}
-      className={`chip-shell chip-active flex flex-col items-center justify-center cursor-pointer no-select transition-all duration-500 text-[15px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 ${reduceMotion? '' : 'animate-pulse-glow animate-float-slow'}`}
-      style={{ width: size, height: size }}
+      className={`chip-shell chip-active flex flex-col items-center justify-center cursor-pointer no-select transition-transform duration-500 text-[15px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 ${reduceMotion? '' : 'animate-pulse-glow animate-float-slow'} ${allOpen? 'center-chip-scaled' : ''}`}
+      style={{ width: size, height: size, transformOrigin: 'center center' }}
       title={allOpen? 'Collapse all panels' : 'Expand all panels'}
     >
       {showAlt ? (
