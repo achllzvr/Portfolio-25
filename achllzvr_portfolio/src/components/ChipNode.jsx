@@ -34,7 +34,6 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
 
     const move = (ev) => {
       const dxRaw = ev.clientX - startX; const dyRaw = ev.clientY - startY;
-      // Cancel long-press if user moves too early (before timer fires)
       if(!draggingRef.current && Math.hypot(dxRaw, dyRaw) > MOVE_CANCEL_THRESHOLD) {
         clearTimers();
         isPressingRef.current = false;
@@ -115,37 +114,37 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
 
  return (
     <div
-  className={`chip-shell absolute ${node.id==='projects' && revealed ? 'w-[30rem]' : 'w-80'} transition-all duration-300 ease-out-soft ${highlighted ? 'chip-active scale-[1.04]' : 'hover:shadow-glow'} ${revealed ? 'backdrop-blur-lg bg-white/10 theme-light:bg-white/50 theme-light:border-black/10 theme-light:shadow-[0_0_0_1px_rgba(0,0,0,0.06),0_6px_18px_-8px_rgba(0,0,0,0.25)]' : 'bg-white/5 theme-light:bg-white/40'} cursor-pointer select-none text-[14px] theme-light:text-neutral-800`}
+      className={`chip-shell absolute ${node.id==='projects' && revealed ? 'w-[30rem]' : 'w-80'} transition-all duration-300 ease-out-soft ${highlighted ? 'chip-active scale-[1.04]' : 'hover:shadow-glow'} ${revealed ? 'backdrop-blur-lg bg-white/10' : 'bg-white/5'} cursor-pointer select-none text-[14px]`}
       style={style}
       onPointerDown={handlePointerDown}
     >
-  <div className={`${(isDragging || reduceMotion) ? '' : 'animate-float-medium'} flex flex-col p-5 gap-4`}>
+      <div className={`${(isDragging || reduceMotion) ? '' : 'animate-float-medium'} flex flex-col p-5 gap-4`}>
         <div className="flex items-center justify-between">
-  <div className="chip-title text-[14px] tracking-wide theme-light:text-accent">{node.label}</div>
+          <div className="chip-title text-[14px] tracking-wide">{node.label}</div>
         {revealed && (
           <button
             onClick={(e)=> { e.stopPropagation(); onLockToggle(node.id); }}
-            className={`text-[10px] font-mono px-2 py-1 rounded-md border border-white/15 hover:border-white/40 transition ${locked? 'bg-white/20 theme-light:bg-black/10' : 'bg-white/5 theme-light:bg-black/5'} theme-light:border-black/20 theme-light:hover:border-black/40`}
+            className={`text-[10px] font-mono px-2 py-1 rounded-md border border-white/15 hover:border-white/40 transition ${locked? 'bg-white/20' : 'bg-white/5'}`}
             title={locked? 'Unlock to auto-collapse on hover out' : 'Lock open'}
           >{locked? '🔒' : '🔓'}</button>
         )}
       </div>
       {showDetail && (
         <div
-          className={`detail-anim ${revealed ? 'detail-open' : 'detail-closed'} text-[14px] font-mono leading-relaxed overflow-auto pr-1 space-y-2 scroll-thin theme-light:text-neutral-700`}
+          className={`detail-anim ${revealed ? 'detail-open' : 'detail-closed'} text-[14px] font-mono leading-relaxed overflow-auto pr-1 space-y-2 scroll-thin`}
           aria-hidden={!revealed}
         >
           {node.type === 'list' && node.content.map((c,i) => <div key={i}>{'> '}{c}</div>)}
           {node.type === 'tags' && (
-            <div className="flex flex-wrap gap-1">{skillObjects.map(s => <span key={s.name} className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/10 text-white/90 border border-white/25 text-[11px] theme-light:bg-neutral-800 theme-light:text-neutral-100 theme-light:border-neutral-700"><span className="opacity-80">{getIcon(s.icon)}</span>{s.name}</span>)}</div>
+            <div className="flex flex-wrap gap-1">{skillObjects.map(s => <span key={s.name} className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/10 text-white/90 border border-white/25 text-[11px]"><span className="opacity-80">{getIcon(s.icon)}</span>{s.name}</span>)}</div>
           )}
           {node.type === 'links' && node.content.map(l => (
-            <a key={l.id || l.label} href={l.href} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-white/80 hover:text-white underline underline-offset-4 theme-light:text-neutral-100 theme-light:hover:text-white/80 theme-light:bg-neutral-800/60 theme-light:px-1 theme-light:rounded">
+            <a key={l.id || l.label} href={l.href} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-white/80 hover:text-white underline underline-offset-4">
               <span className="text-[13px] opacity-80">{getIcon(l.icon)}</span>{l.label || l.text}
             </a>
           ))}
           {node.type === 'certs' && node.content.map(c => (
-            <div key={c.name} className="flex items-center gap-2 text-white/80 theme-light:text-neutral-100 theme-light:bg-neutral-800/60 theme-light:px-1 theme-light:rounded">
+            <div key={c.name} className="flex items-center gap-2 text-white/80">
               <span className="text-[11px] opacity-70">{getIcon('api')}</span>
               {c.link ? <a href={c.link} target="_blank" rel="noreferrer" className="hover:text-white underline decoration-dotted underline-offset-4 theme-light:text-neutral-100 theme-light:hover:text-white/70">{c.name}</a> : c.name}
             </div>
@@ -153,10 +152,10 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
           {node.type === 'projects' && (
             <div className="grid md:grid-cols-2 gap-3">
               {node.content.map(p => (
-                <div key={p.id} onClick={(e)=>{ e.stopPropagation(); onItemClick?.(node,p); }} className="group border border-white/10 rounded-md p-3 hover:border-white/60 hover:bg-white/10 transition relative theme-light:border-black/10 theme-light:hover:border-black/40 theme-light:hover:bg-black/5">
-                  <div className="font-mono text-[13px] flex justify-between"><span>{p.title}</span><span className="text-white/40 theme-light:text-black/40">{p.stack[0]}</span></div>
-                  <div className="text-[12px] text-white/60 line-clamp-2 theme-light:text-neutral-600">{p.blurb}</div>
-                  <div className="hidden group-hover:block absolute -top-3 -right-2 text-[9px] bg-white text-black px-1 rounded shadow theme-light:bg-black theme-light:text-white">Details</div>
+                <div key={p.id} onClick={(e)=>{ e.stopPropagation(); onItemClick?.(node,p); }} className="group border border-white/10 rounded-md p-3 hover:border-white/60 hover:bg-white/10 transition relative">
+                  <div className="font-mono text-[13px] flex justify-between"><span>{p.title}</span><span className="text-white/40">{p.stack[0]}</span></div>
+                  <div className="text-[12px] text-white/60 line-clamp-2">{p.blurb}</div>
+                  <div className="hidden group-hover:block absolute -top-3 -right-2 text-[9px] bg-white text-black px-1 rounded shadow">Details</div>
                 </div>
               ))}
             </div>
@@ -165,7 +164,7 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
       )}
       {/* Pin visual (single square) positioned relative to node shell */}
       <div style={{ position: 'absolute', pointerEvents: 'none', ...pinStyle }}>
-        <div style={{ width: PIN_SIZE, height: PIN_SIZE }} className="rounded-sm bg-white/20 theme-light:bg-neutral-800 border border-white/10" />
+        <div style={{ width: PIN_SIZE, height: PIN_SIZE }} className="rounded-sm bg-white/20 border border-white/10" />
       </div>
       </div>
     </div>
