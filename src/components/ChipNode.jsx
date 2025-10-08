@@ -3,7 +3,7 @@ import { useRef, useState, useEffect, useLayoutEffect, memo } from 'react';
 // Export shared pin geometry so line routing can align exactly
 export const NODE_PIN_GAP = 16; // space between node outer box and pin center
 export const NODE_PIN_SIZE = 8; // square size (CSS width/height)
-import { getIcon, skills as skillObjects } from '../content/portfolioContent.js';
+import { getIcon, skills as skillObjects } from '../content/portfolioContent.jsx';
 
 function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlighted, onItemClick, style, onDrag, reduceMotion=false, center, onMeasure }) {
   // Long press drag logic (robust against re-renders)

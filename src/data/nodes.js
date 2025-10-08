@@ -1,6 +1,6 @@
 // Basic node definitions with radial positions (angle, radius)
 // Content now imported from centralized content module.
-import { about, projects, skills as skillList, experience, certifications, links } from '../content/portfolioContent.js';
+import { about, projects, skills as skillList, experience, certifications, links } from '../content/portfolioContent.jsx';
 
 export const baseNodes = [
   // Top-center (moved close to center ~10% distance)
