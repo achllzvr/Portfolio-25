@@ -1,35 +1,37 @@
 import { useState } from 'react';
 import profileImg from '../assets/me.jpeg';
+import logoTransparent from '../assets/transparenticon.png';
 
 export default function CenterChip({ size = 220, reduceMotion=false, onToggleAll, allOpen }) {
   const [showAlt, setShowAlt] = useState(false);
-  const handleClick = () => {
-    onToggleAll?.();
-  };
+  const handleClick = () => onToggleAll?.();
   return (
     <button
-      type="button"
+  type="button"
       aria-pressed={allOpen}
       onClick={handleClick}
-      onMouseEnter={() => { setShowAlt(s => !s); }}
-      className={`chip-shell chip-active flex flex-col items-center justify-center cursor-pointer no-select transition-transform duration-500 text-[15px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 ${reduceMotion? '' : 'animate-pulse-glow animate-float-slow'} ${allOpen? 'center-chip-scaled' : ''}`}
+  // toggle which is in front each time the user hovers in
+  onMouseEnter={() => { setShowAlt(s => !s); }}
+  onMouseLeave={() => { /* keep state until next enter */ }}
+  className={`relative chip-shell chip-active flex items-center justify-center cursor-pointer no-select transition-transform duration-500 text-[15px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 ${reduceMotion? '' : 'animate-pulse-glow animate-float-slow'} ${allOpen? 'center-chip-scaled' : ''}`}
       style={{ width: size, height: size, transformOrigin: 'center center' }}
       title={allOpen? 'Collapse all panels' : 'Expand all panels'}
-    >
-      {showAlt ? (
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="w-28 h-28 rounded-lg overflow-hidden bg-white/10 flex items-center justify-center text-[11px] font-mono tracking-wide backdrop-blur-sm border border-white/10">
-            <img src={profileImg} alt="Profile" className="w-full h-full object-cover" />
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-col items-center gap-3">
-          <div className="font-mono text-4xl tracking-tight">AVR</div>
-          <div className="text-[11px] font-mono uppercase text-white/70">
-            {allOpen ? 'Collapse All' : 'Expand All'}
-          </div>
-        </div>
-      )}
+    
+      >
+      {/* Full-bleed profile image with padding */}
+      <span className={`absolute inset-0 rounded-xl overflow-hidden pointer-events-none p-2 transition-all duration-300 transform ${showAlt ? 'opacity-100 scale-105' : 'opacity-95 scale-100'}`}>
+        <img src={profileImg} alt="Profile" className="w-full h-full object-cover rounded-lg" />
+        {/* Darker overlay when logo is front (showAlt === false) to improve contrast */}
+        <span className={`absolute inset-0 mix-blend-multiply transition-colors duration-300 ${showAlt ? 'bg-black/10' : 'bg-black/40'}`} aria-hidden />
+      </span>
+      {/* Foreground content (logo or text) */}
+      <div className="relative z-10 flex items-center justify-center">
+        <img
+          src={logoTransparent}
+          alt="Logo"
+          className={`w-20 h-20 object-contain transition-all duration-300 transform ${showAlt? 'opacity-0 scale-75' : 'opacity-100 scale-100'}`}
+        />
+      </div>
     </button>
   );
 }
