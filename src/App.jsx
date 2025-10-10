@@ -9,12 +9,12 @@ import { useMouseLight } from './hooks/useMouseLight.js';
 
 export default function App() {
   const [revealed, setRevealed] = useState({});
-  const [locked, setLocked] = useState({});
+  // removed `locked` state (lock UI removed from nodes)
   const [detail, setDetail] = useState(null); // {node, project}
   const [detaching, setDetaching] = useState({}); // nodeId -> true while dragging
   const [signal, setSignal] = useState({}); // nodeId -> true shortly after reattach
   const mouse = useMouseLight();
-
+  // removed `locked` state (lock UI removed from nodes)
   const center = useMemo(()=> ({ x: window.innerWidth/2, y: window.innerHeight/2 }), []);
   const SCALE = 0.85; // global layout scale factor (reduced by additional 10%)
 
@@ -68,9 +68,6 @@ export default function App() {
       return next;
     });
   }, []);
-  const toggleLock = (id) => {
-    setLocked(l => ({ ...l, [id]: !l[id] }));
-  };
   const dragNode = (id, x, y, dragging=false, drop=false) => {
     if(dragging) setDetaching(d => ({ ...d, [id]: true }));
     if(drop) {
@@ -78,7 +75,7 @@ export default function App() {
       setSignal(s => ({ ...s, [id]: true }));
       setTimeout(()=> setSignal(s => ({ ...s, [id]: false })), 1200);
     }
-  setNodePositions(prev => prev.map(n => n.id === id ? { ...n, pos: { x, y } } : n));
+    setNodePositions(prev => prev.map(n => n.id === id ? { ...n, pos: { x, y } } : n));
     if(drop) {
       // enforce spacing after final drop
       setNodePositions(prev => enforceSpacing(prev, id));
@@ -182,10 +179,8 @@ export default function App() {
           key={n.id}
           node={n}
           revealed={!!revealed[n.id]}
-          locked={!!locked[n.id]}
           highlighted={nearest===n.id}
           onToggle={toggleNode}
-          onLockToggle={toggleLock}
           onItemClick={(node, project)=> setDetail({ node, project })}
           onDrag={dragNode}
           reduceMotion={reduceMotion}

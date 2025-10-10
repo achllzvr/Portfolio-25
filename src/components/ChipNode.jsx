@@ -5,7 +5,7 @@ export const NODE_PIN_GAP = 16; // space between node outer box and pin center
 export const NODE_PIN_SIZE = 8; // square size (CSS width/height)
 import { getIcon, skills as skillObjects } from '../content/portfolioContent.jsx';
 
-function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlighted, onItemClick, style, onDrag, reduceMotion=false, center, onMeasure }) {
+function ChipNodeInner({ node, revealed, onToggle, highlighted, onItemClick, style, onDrag, reduceMotion=false, onMeasure }) {
   // Long press drag logic (robust against re-renders)
   const pressTimerRef = useRef(null);
   const isPressingRef = useRef(false);
@@ -100,17 +100,7 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
     return ()=> window.removeEventListener('resize', handler);
   }, [node.id, onMeasure]);
 
-  // determine facing side relative to center for single animated pin
-  let side = 'left';
-  if(center) {
-    const dx = node.pos.x - center.x; const dy = node.pos.y - center.y;
-    if(Math.abs(dx) > Math.abs(dy)) side = dx < 0 ? 'right' : 'left'; else side = dy < 0 ? 'bottom' : 'top';
-  }
-  const PIN_GAP = NODE_PIN_GAP; const PIN_SIZE = NODE_PIN_SIZE;
-  let pinStyle = { left: -PIN_GAP, top: '50%', transform: 'translate(-50%, -50%)' };
-  if(side === 'right') pinStyle = { right: -PIN_GAP, top: '50%', transform: 'translate(50%, -50%)' };
-  if(side === 'top') pinStyle = { top: -PIN_GAP, left: '50%', transform: 'translate(-50%, -50%)' };
-  if(side === 'bottom') pinStyle = { bottom: -PIN_GAP, left: '50%', transform: 'translate(-50%, 50%)' };
+  // pin visuals removed; pin geometry constants retained for routing logic elsewhere
 
  const expandUp = node.id === 'about' || node.id === 'skills' || node.id === 'certs';
  const styledDetail = ['about','skills','certs','experience','links','projects'].includes(node.id);
@@ -125,13 +115,7 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
       <div className={`${(isDragging || reduceMotion) ? '' : 'animate-float-medium'} flex flex-col p-5 gap-4`}>
         <div className="flex items-center justify-between">
           <div className="chip-title text-[14px] tracking-wide">{node.label}</div>
-        {revealed && (
-          <button
-            onClick={(e)=> { e.stopPropagation(); onLockToggle(node.id); }}
-            className={`text-[10px] font-mono px-2 py-1 rounded-md border border-white/15 hover:border-white/40 transition ${locked? 'bg-white/20' : 'bg-white/5'}`}
-            title={locked? 'Unlock to auto-collapse on hover out' : 'Lock open'}
-          >{locked? '🔒' : '🔓'}</button>
-        )}
+        {/* lock button removed per request */}
       </div>
       {showDetail && (
         expandUp ? (
@@ -200,10 +184,7 @@ function ChipNodeInner({ node, revealed, locked, onToggle, onLockToggle, highlig
           </div>
         )
       )}
-      {/* Pin visual (single square) positioned relative to node shell */}
-      <div style={{ position: 'absolute', pointerEvents: 'none', ...pinStyle }}>
-        <div style={{ width: PIN_SIZE, height: PIN_SIZE }} className="rounded-sm bg-white/20 border border-white/10" />
-      </div>
+      {/* pin visual removed per request */}
       </div>
     </div>
   );
@@ -213,7 +194,7 @@ const areEqual = (prev, next) => {
   // Only re-render if these change; ignore style object identity by comparing relevant numeric positions
   const prevPos = prev.node.pos; const nextPos = next.node.pos;
   return prev.revealed === next.revealed &&
-    prev.locked === next.locked &&
+    // locked removed
     prev.highlighted === next.highlighted &&
     prev.node.id === next.node.id &&
     prevPos.x === nextPos.x && prevPos.y === nextPos.y &&
