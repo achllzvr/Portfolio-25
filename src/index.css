@@ -42,7 +42,8 @@
     max-height:0; 
     opacity:0; 
     overflow:hidden; 
-    transition: max-height 520ms cubic-bezier(.22,.61,.36,1), opacity 420ms ease, filter 520ms ease; 
+    /* unified timing/easing to match center-chip scale */
+    transition: max-height 500ms cubic-bezier(.22,.61,.36,1), opacity 500ms cubic-bezier(.22,.61,.36,1), filter 500ms cubic-bezier(.22,.61,.36,1); 
     will-change:max-height,opacity; 
   }
   .detail-open { max-height:640px; opacity:1; }
@@ -59,11 +60,13 @@
     transform-origin: bottom center;
     border-radius: 0.75rem;
     padding: var(--detail-padding);
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.06);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02), 0 8px 20px -8px rgba(0,0,0,0.6);
+  /* darker glassmorphic background for details */
+  background: rgba(7,8,10,0.62);
+  backdrop-filter: blur(10px) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02), 0 14px 40px -14px rgba(0,0,0,0.75);
     z-index: 40;
-    transition: transform 420ms ease, opacity 420ms ease;
+    transition: transform 500ms cubic-bezier(.22,.61,.36,1), opacity 500ms cubic-bezier(.22,.61,.36,1);
   }
   .detail-up.detail-closed { transform: translateY(var(--detail-closed-offset)); opacity: 0; pointer-events: none; }
   .detail-up.detail-open { transform: translateY(0); opacity: 1; pointer-events: auto; }
@@ -77,11 +80,13 @@
     transform-origin: top center;
     border-radius: 0.75rem;
     padding: var(--detail-padding);
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.06);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02), 0 8px 20px -8px rgba(0,0,0,0.6);
+  /* darker glassmorphic background for details */
+  background: rgba(7,8,10,0.62);
+  backdrop-filter: blur(10px) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02), 0 14px 40px -14px rgba(0,0,0,0.75);
     z-index: 40;
-    transition: transform 420ms ease, opacity 420ms ease;
+    transition: transform 500ms cubic-bezier(.22,.61,.36,1), opacity 500ms cubic-bezier(.22,.61,.36,1);
   }
   .detail-down.detail-closed { transform: translateY(calc(-1 * var(--detail-closed-offset))); opacity: 0; pointer-events: none; }
   .detail-down.detail-open { transform: translateY(0); opacity: 1; pointer-events: auto; }

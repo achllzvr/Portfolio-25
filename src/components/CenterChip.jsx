@@ -19,17 +19,30 @@ export default function CenterChip({ size = 220, reduceMotion=false, onToggleAll
     
       >
       {/* Full-bleed profile image with padding */}
-      <span className={`absolute inset-0 rounded-xl overflow-hidden pointer-events-none p-2 transition-all duration-300 transform ${showAlt ? 'opacity-100 scale-105' : 'opacity-95 scale-100'}`}>
-        <img src={profileImg} alt="Profile" className="w-full h-full object-cover rounded-lg" />
+      <span
+        className={`absolute inset-0 rounded-xl overflow-hidden pointer-events-none p-2 transform ${showAlt ? 'opacity-100 scale-105' : 'opacity-95 scale-100'}`}
+        style={{
+          transition: 'opacity 400ms cubic-bezier(.33,.79,.24,1), transform 400ms cubic-bezier(.33,.79,.24,1)'
+        }}
+      >
+        <img src={profileImg} alt="Profile" className="w-full h-full object-cover rounded-lg" style={{transition: 'inherit'}} />
         {/* Darker overlay when logo is front (showAlt === false) to improve contrast */}
-        <span className={`absolute inset-0 mix-blend-multiply transition-colors duration-300 ${showAlt ? 'bg-black/10' : 'bg-black/40'}`} aria-hidden />
+        <span
+          className={`absolute inset-0 mix-blend-multiply ${showAlt ? '' : ''}`}
+          aria-hidden
+          style={{
+            transition: 'background-color 400ms cubic-bezier(.33,.79,.24,1), opacity 400ms cubic-bezier(.33,.79,.24,1)',
+            backgroundColor: showAlt ? 'rgba(0,0,0,0.10)' : 'rgba(0,0,0,0.40)'
+          }}
+        />
       </span>
       {/* Foreground content (logo or text) */}
       <div className="relative z-10 flex items-center justify-center">
         <img
           src={logoTransparent}
           alt="Logo"
-          className={`w-20 h-20 object-contain transition-all duration-300 transform ${showAlt? 'opacity-0 scale-75' : 'opacity-100 scale-100'}`}
+          className={`w-20 h-20 object-contain transform ${showAlt ? 'opacity-0 scale-75' : 'opacity-100 scale-100'}`}
+          style={{transition: 'opacity 400ms cubic-bezier(.33,.79,.24,1), transform 400ms cubic-bezier(.33,.79,.24,1)'}}
         />
       </div>
     </button>
