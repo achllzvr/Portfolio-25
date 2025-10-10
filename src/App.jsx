@@ -4,13 +4,16 @@ import CenterChip from './components/CenterChip.jsx';
 import ChipNode from './components/ChipNode.jsx';
 import CircuitLines from './components/CircuitLines.jsx';
 import DetailModal from './components/DetailModal.jsx';
+import CertViewer from './components/CertViewer.jsx';
 import { baseNodes } from './data/nodes.js';
+import { certifications } from './content/portfolioContent.jsx';
 import { useMouseLight } from './hooks/useMouseLight.js';
 
 export default function App() {
   const [revealed, setRevealed] = useState({});
   // removed `locked` state (lock UI removed from nodes)
   const [detail, setDetail] = useState(null); // {node, project}
+  const [openCert, setOpenCert] = useState(null); // cert object for full-screen viewer
   const [detaching, setDetaching] = useState({}); // nodeId -> true while dragging
   const [signal, setSignal] = useState({}); // nodeId -> true shortly after reattach
   const mouse = useMouseLight();
@@ -146,6 +149,24 @@ export default function App() {
   const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark');
   const toggleMotion = () => setReduceMotion(m => !m);
 
+  // Preload embed scripts for certifications so embeds are ready when viewer opens
+  useEffect(()=> {
+    const scriptSrcs = new Set();
+    for(const c of certifications) {
+      if(!c.embed) continue;
+      const temp = document.createElement('div');
+      temp.innerHTML = c.embed;
+      const scripts = Array.from(temp.querySelectorAll('script')).map(s => s.src).filter(Boolean);
+      for(const s of scripts) scriptSrcs.add(s);
+    }
+    const appended = [];
+    for(const src of scriptSrcs) {
+      if(document.querySelector(`script[src="${src}"]`)) continue;
+      const sc = document.createElement('script'); sc.src = src; sc.async = true; document.head.appendChild(sc); appended.push(sc);
+    }
+    return () => appended.forEach(s => s.remove());
+  }, []);
+
   return (
   <div className={`relative w-full h-full font-sans overflow-hidden transition-theme ${theme==='light' ? 'theme-light' : 'theme-dark'} ${reduceMotion? 'motion-reduce' : ''}` }>
   {/* Cross-fade stacked backgrounds (dark & light both rendered) */}
@@ -182,6 +203,7 @@ export default function App() {
           highlighted={nearest===n.id}
           onToggle={toggleNode}
           onItemClick={(node, project)=> setDetail({ node, project })}
+          onOpenCert={(cert)=> { setOpenCert(cert); /* keep node expanded until viewer closed */ }}
           onDrag={dragNode}
           reduceMotion={reduceMotion}
           style={{ left: n.pos.x - (128 * SCALE), top: n.pos.y - (48 * SCALE) }}
@@ -201,6 +223,11 @@ export default function App() {
           position={detailNode.pos}
           onClose={()=> setDetail(null)}
         />
+      )}
+
+      {/* Fullscreen certificate viewer (blocks node collapse while open) */}
+      {openCert && (
+        <CertViewer cert={openCert} onClose={()=> setOpenCert(null)} />
       )}
 
       {/* Mouse light overlay (CSS variables updated outside React for smoother perf) */}

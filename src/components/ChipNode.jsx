@@ -5,7 +5,7 @@ export const NODE_PIN_GAP = 16; // space between node outer box and pin center
 export const NODE_PIN_SIZE = 8; // square size (CSS width/height)
 import { getIcon, skills as skillObjects } from '../content/portfolioContent.jsx';
 
-function ChipNodeInner({ node, revealed, onToggle, highlighted, onItemClick, style, onDrag, reduceMotion=false, onMeasure }) {
+function ChipNodeInner({ node, revealed, onToggle, highlighted, onItemClick, style, onDrag, reduceMotion=false, onMeasure, onOpenCert }) {
   // Long press drag logic (robust against re-renders)
   const pressTimerRef = useRef(null);
   const isPressingRef = useRef(false);
@@ -134,8 +134,12 @@ function ChipNodeInner({ node, revealed, onToggle, highlighted, onItemClick, sty
             ))}
             {node.type === 'certs' && node.content.map(c => (
               <div key={c.name} className="flex items-center gap-2 text-white/80">
-                <span className="text-[11px] opacity-70">{getIcon('api')}</span>
-                {c.link ? <a href={c.link} target="_blank" rel="noreferrer" className="hover:text-white underline decoration-dotted underline-offset-4">{c.name}</a> : c.name}
+                {c.icon ? <img src={c.icon} alt="badge" className="w-5 h-5 rounded-sm" /> : <span className="text-[11px] opacity-70">{getIcon('api')}</span>}
+                {c.file ? (
+                  <button onClick={(e)=>{ e.stopPropagation(); onOpenCert?.(c); }} className="hover:text-white underline decoration-dotted underline-offset-4 text-left">{c.name}</button>
+                ) : (
+                  c.link ? <a href={c.link} target="_blank" rel="noreferrer" className="hover:text-white underline decoration-dotted underline-offset-4">{c.name}</a> : c.name
+                )}
               </div>
             ))}
             {node.type === 'projects' && (
