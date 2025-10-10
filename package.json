@@ -6,15 +6,13 @@
   "homepage": "https://achllzvr.github.io/Portfolio-25",
   "scripts": {
     "dev": "vite",
+    "start": "vite",
     "build": "vite build",
-    "lint": "eslint .",
     "preview": "vite preview",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "lint": "eslint .",
+    "test": "echo \"No tests configured\" && exit 0",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "react": "^19.1.1",
