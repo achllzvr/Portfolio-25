@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getIcon } from '../content/portfolioContent.jsx';
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
+// Worker entry (Vite-friendly import)
+// Import worker file as a URL so Vite/Rollup can emit it and provide a valid href
+import pdfWorkerUrl from 'pdfjs-dist/legacy/build/pdf.worker.mjs?url';
 
 export default function CertViewer({ cert, onClose }) {
-  const embedRef = useRef(null);
   const [visible, setVisible] = useState(false);
   // canvas and pan/zoom refs/state (must be top-level hooks)
   const canvasRef = useRef(null);
@@ -17,56 +19,13 @@ export default function CertViewer({ cert, onClose }) {
     if(cert) requestAnimationFrame(()=> setVisible(true));
     return ()=> setVisible(false);
   }, [cert]);
-
-  useEffect(()=> {
-    if(!cert) return;
-    if(!cert?.embed) {
-      if(embedRef.current) embedRef.current.innerHTML = '';
-      return;
+  // Configure pdfjs worker
+  useEffect(() => {
+    // set worker src to the imported module (Vite will handle it)
+    if (pdfjsLib && pdfWorkerUrl) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
     }
-    // Insert embed HTML
-    if(embedRef.current) embedRef.current.innerHTML = cert.embed;
-    // Find script tags in embed HTML and append them to head to ensure execution
-    const temp = document.createElement('div');
-    temp.innerHTML = cert.embed;
-    const scripts = Array.from(temp.querySelectorAll('script')).map(s => s.src).filter(Boolean);
-    const appended = [];
-    const loadPromises = [];
-  // (no hooks inside effects) ensure embed scripts are appended below
-    for(const src of scripts) {
-      if(document.querySelector(`script[src="${src}"]`)) continue;
-      const sc = document.createElement('script');
-      sc.src = src;
-      sc.async = true;
-      const p = new Promise((res)=> { sc.onload = res; sc.onerror = res; });
-      document.head.appendChild(sc);
-      appended.push(sc);
-      loadPromises.push(p);
-    }
-    // After scripts load, try calling common initialization entry points for embed libraries
-    Promise.all(loadPromises).then(()=> {
-      try {
-        // Credly tends to attach a global; try common names defensively
-        if(window.Credly && typeof window.Credly.render === 'function') {
-          window.Credly.render();
-        }
-        if(window.credly && typeof window.credly.render === 'function') {
-          window.credly.render();
-        }
-        if(window.__credlyEmbed__ && typeof window.__credlyEmbed__.init === 'function') {
-          window.__credlyEmbed__.init();
-        }
-      } catch {
-        // no-op if init not available
-      }
-    });
-
-    const currentEmbed = embedRef.current;
-    return () => {
-      for(const sc of appended) sc.remove();
-      if(currentEmbed) currentEmbed.innerHTML = '';
-    };
-  }, [cert]);
+  }, []);
 
   const handleClose = () => {
     setVisible(false);
@@ -144,12 +103,12 @@ export default function CertViewer({ cert, onClose }) {
           </div>
 
           <div className="mt-4 chip-shell p-3 rounded-md bg-white/3">
-            <div className="chip-title mb-2">Verification / Badge</div>
+            <div className="chip-title mb-2">Certificate</div>
             <div className="flex items-center gap-3 mb-2">
               {cert.icon ? <img src={cert.icon} alt="badge" className="w-12 h-12 rounded-md shadow" /> : <span className="opacity-80">{getIcon('api')}</span>}
               <div className="text-sm text-white/90">{cert.name}</div>
             </div>
-            <div ref={embedRef} className="embed-area text-white" />
+            <div className="text-sm text-white/70">Displayed as a snapshot; use the controls above to zoom and pan.</div>
           </div>
 
         </div>

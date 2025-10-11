@@ -11,6 +11,13 @@ export const about = [
 
 import ic3Icon from '../assets/certification-icons/IC3.png';
 import javaIcon from '../assets/certification-icons/Java.png';
+// PDF assets (import so Vite resolves them correctly)
+import javaCert from '../assets/certification-certificates/JavaSpecialistCert.pdf';
+import ic3Cert from '../assets/certification-certificates/IC3 Certificate.pdf';
+import javaBasicsCert from '../assets/certification-certificates/JavaBasics_certificate.pdf';
+import htmlCert from '../assets/certification-certificates/HTMLFundamentals_certificate.pdf';
+import cssCert from '../assets/certification-certificates/CSSMastery_certificate.pdf';
+import sqlCert from '../assets/certification-certificates/SQLFundamentals_certificate.pdf';
 export const projects = [
   { id: 'nutify', title: 'NUtify', blurb: 'Nutrition tracking mobile app', stack: ['Flutter','Firebase'], description: 'Longer description placeholder. Add goals, tech decisions, and outcomes here.' },
   { id: 'tabulation', title: 'NU LP Tabulation 2025', blurb: 'Event scoring system', stack: ['React','Node','MongoDB'], description: 'Details about scalability, real-time features, etc.' },
@@ -26,12 +33,12 @@ export const experience = [
 ];
 
 export const certifications = [
-  { name: 'Java (IT Specialist)', file: '/src/assets/certification-certificates/JavaSpecialistCert.pdf', icon: javaIcon, verify: 'https://www.credly.com/earner/earned/badge/d3041bd5-d4ca-424c-93df-6ff6ee8f8895', embed: '<div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="d3041bd5-d4ca-424c-93df-6ff6ee8f8895" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>' },
-  { name: 'IC3', file: '/src/assets/certification-certificates/IC3 Certificate.pdf', icon: ic3Icon, verify: 'https://www.credly.com/earner/earned/badge/1b64d7db-c9d4-41bc-8813-f196f1ebccfc', embed: '<div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="1b64d7db-c9d4-41bc-8813-f196f1ebccfc" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>' },
-  { name: 'Java (Beginner)', file: '/src/assets/certification-certificates/JavaBasics_certificate.pdf', icon: '', verify: 'https://www.codecred.dev/verify/2b8e1b7a-1833-4475-b2cd-2fc837d721e0', embed: '<iframe src="https://www.codecred.dev/embed/certificates/2b8e1b7a-1833-4475-b2cd-2fc837d721e0" width="800" height="600" frameborder="0"></iframe>' },
-  { name: 'HTML Fundamentals', file: '/src/assets/certification-certificates/HTMLFundamentals_certificate.pdf', icon: '', verify: 'https://www.codecred.dev/verify/28bffe22-5520-44dc-a6b0-10f6557025b5', embed: '<iframe src="https://www.codecred.dev/embed/certificates/28bffe22-5520-44dc-a6b0-10f6557025b5" width="800" height="600" frameborder="0"></iframe>' },
-  { name: 'CSS Mastery', file: '/src/assets/certification-certificates/CSSMastery_certificate.pdf', icon: '', verify: 'https://www.codecred.dev/verify/1446eb12-b922-4bd2-b652-3e7b9cc4e17f', embed: '<iframe src="https://www.codecred.dev/embed/certificates/1446eb12-b922-4bd2-b652-3e7b9cc4e17f" width="800" height="600" frameborder="0"></iframe>' },
-  { name: 'SQL Fundamentals', file: '/src/assets/certification-certificates/SQLFundamentals_certificate.pdf', icon: '', verify: 'https://www.codecred.dev/verify/e17fafc6-a997-4321-96de-bd57d26bebdf', embed: '<iframe src="https://www.codecred.dev/embed/certificates/e17fafc6-a997-4321-96de-bd57d26bebdf" width="800" height="600" frameborder="0"></iframe>' }
+  { name: 'Java (IT Specialist)', file: javaCert, icon: javaIcon, verify: 'https://www.credly.com/earner/earned/badge/d3041bd5-d4ca-424c-93df-6ff6ee8f8895' },
+  { name: 'IC3', file: ic3Cert, icon: ic3Icon, verify: 'https://www.credly.com/earner/earned/badge/1b64d7db-c9d4-41bc-8813-f196f1ebccfc' },
+  { name: 'Java (Beginner)', file: javaBasicsCert, icon: '', verify: 'https://www.codecred.dev/verify/2b8e1b7a-1833-4475-b2cd-2fc837d721e0' },
+  { name: 'HTML Fundamentals', file: htmlCert, icon: '', verify: 'https://www.codecred.dev/verify/28bffe22-5520-44dc-a6b0-10f6557025b5' },
+  { name: 'CSS Mastery', file: cssCert, icon: '', verify: 'https://www.codecred.dev/verify/1446eb12-b922-4bd2-b652-3e7b9cc4e17f' },
+  { name: 'SQL Fundamentals', file: sqlCert, icon: '', verify: 'https://www.codecred.dev/verify/e17fafc6-a997-4321-96de-bd57d26bebdf' }
 ];
 
 export const links = [
